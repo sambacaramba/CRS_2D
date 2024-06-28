@@ -1,5 +1,5 @@
 
-function [normal_diff chosenThreshold] = CRS2D(savepath, fname, image, pixelsize, mov_window_size,angle_range)
+function [normal_diff, chosenThreshold, fitted_line, smoothed_line, largestObjectLabel] = CRS2D(savepath, fname, image, pixelsize, mov_window_size,angle_range)
 
 
 
@@ -91,7 +91,7 @@ smoothed_line_iter = smoothed_line; % Assuming smoothed_line is defined elsewher
 ws = floor(mov_window_size / pixelsize); % Assuming pixelsize is defined elsewhere
 cols = length(smoothed_line_iter); % Assuming this is the correct way to get the number of columns
 x = 1:cols; % x-coordinates for fitting
-figure;
+% figure;
 m = 1; % Iteration counter
 stoprule = inf; % Initialize stoprule with a value that guarantees loop entry
 
@@ -114,8 +114,8 @@ while stoprule > ws
     
     % Plotting the evolution of stoprule
     kuvaaja(m, 1) = stoprule;
-    plot(kuvaaja);
-    drawnow;
+%     plot(kuvaaja);
+%     drawnow;
     
     m = m + 1; % Update iteration counter
 end
@@ -126,7 +126,7 @@ M = size(A, 1); % Number of rows
 N = size(A, 2); % Number of columns
 
 % Create the figure and perform your plotting
-fig = figure;
+fig = figure('Visible','off');
 
 % Visualization
 imshow(A), hold on;
@@ -182,9 +182,9 @@ end
 
 % Visualization (Optional)
 % Here you can visualize the normal_diff array to see the differences in normals
-fig = figure, plot(normal_diff), title('Difference in Surface Normals');
-filename = [savepath '\' fname '_difference.png']; % Change to your preferred file name
-print(fig, filename, '-dpng', ['-r', num2str(200)]); % 96 is the screen resolution in dpi
+% fig = figure, plot(normal_diff), title('Difference in Surface Normals');
+% filename = [savepath '\' fname '_difference.png']; % Change to your preferred file name
+% print(fig, filename, '-dpng', ['-r', num2str(200)]); % 96 is the screen resolution in dpi
 
 
 
@@ -192,7 +192,7 @@ M = size(A, 1); % Number of rows
 N = size(A, 2); % Number of columns
 
 % Create the figure
-fig = figure;
+fig = figure('Visible','off');
 
 
 ax = gca; % Get the handle to the current axes
@@ -287,6 +287,15 @@ ylabel('Value range 0 to 90');
 
 % Hold off to finish plotting
 
+ % Calculate the length of the moving window in pixels
+    mov_window_pixels = round(mov_window_size / pixelsize);
+
+    % Plot the line representing the moving window size
+    x_start = 50; % Starting x-coordinate for the line
+    y_start = 50; % Starting y-coordinate for the line
+    line([x_start, x_start + mov_window_pixels], [y_start, y_start], 'Color', 'k', 'LineWidth', 5);
+    text(x_start, y_start + 20, ['Moving window length = ' num2str(mov_window_size) 'µm'], ...
+         'Color', 'k', 'FontSize', 12);
 
 
 %show where masks of artefacts were applied if they exist
@@ -320,7 +329,9 @@ ylabel('Value range 0 to 90');
 
 
 % Save the figure as an image
-filename = fullfile(savepath, [fname '_CRS_9-45.png']); % Using fullfile for better path handling
+angleRangeString = sprintf('_CRS_%d-%d', angle_range(1), angle_range(2));
+
+filename = fullfile(savepath, [fname angleRangeString '.png']); % Using fullfile for better path handling
 print(fig, filename, '-dpng', ['-r', '400']); % Specifying DPI
 
 
