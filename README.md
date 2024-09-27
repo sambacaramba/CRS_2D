@@ -13,7 +13,9 @@ Cartilage Roughness Score. Surface roughness analysis tool for histological samp
 *Figure 2: Osteoarthritis-affected cartilage surface.*
 
 ## Video Demonstration
-https://github.com/user-attachments/assets/17de1fda-2be6-4c55-8244-6043dbb43167
+https://github.com/user-attachments/assets/4c24f8ef-3191-40d2-beb0-8b9f20ac222d
+
+
 
 ## Healthy Cartilage - Result 
 ![Healthy_result_bin](https://github.com/user-attachments/assets/41cdf6ac-7e47-46e4-8c31-a8863a65ee3b)
