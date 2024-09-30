@@ -3,6 +3,9 @@ Cartilage Roughness Score. Surface roughness analysis tool for histological samp
 
 Used scripts from other sources: 
 Einar Ueland (2024). Astar-Algorithm (https://github.com/EinarUeland/Astar-Algorithm), GitHub. Retrieved September 27, 2024.
+
+Douglas Schwarz (2024). uipickfiles: uigetfile on steroids (https://www.mathworks.com/matlabcentral/fileexchange/10867-uipickfiles-uigetfile-on-steroids), MATLAB Central File Exchange. Retrieved September 30, 2024.
+
 - Settings in this example: 
   - moving window size = 28µm (increase to catch larger defects, decrease to catch smaller defects)
   - Pixel size = 0.2515µm/pixel
