@@ -1,4 +1,4 @@
-function paintAndAnalyze(img, pixelsize, mov_window_size)
+function paintAndAnalyze(img, pixelsize, mov_window_size,binfactor)
     % Display the image
     fig = figure;
     imshow(img);
@@ -6,14 +6,14 @@ function paintAndAnalyze(img, pixelsize, mov_window_size)
     title('Draw ROIs on the image. Press "Done" when finished.');
 
     % Calculate the length of the moving window in pixels
-    mov_window_pixels = round(mov_window_size / pixelsize);
+    mov_window_pixels = round(mov_window_size / (pixelsize*binfactor));
 
     % Plot the line representing the moving window size
     x_start = 50; % Starting x-coordinate for the line
     y_start = 50; % Starting y-coordinate for the line
-    line([x_start, x_start + mov_window_pixels], [y_start, y_start], 'Color', 'k', 'LineWidth', 5);
+    line([x_start, x_start + mov_window_pixels], [y_start, y_start], 'Color', 'w', 'LineWidth', 5);
     text(x_start, y_start + 20, ['Moving window length = ' num2str(mov_window_size) 'µm'], ...
-         'Color', 'k', 'FontSize', 12);
+         'Color', 'w', 'FontSize', 12);
 
     % Initialize the ROI manager
     roiManager = images.roi.Rectangle.empty();
@@ -48,7 +48,7 @@ function paintAndAnalyze(img, pixelsize, mov_window_size)
     validROIs = roiManager(isvalid(roiManager));
 
     % Process ROIs and update columnPainted array
-    outputfile = zeros(1, size(img, 2));
+    outputfile = zeros(1, size(img, 2)*binfactor);
     fprintf('Number of ROIs drawn: %d\n', numel(validROIs));
 
     for i = 1:numel(validROIs)
@@ -56,8 +56,8 @@ function paintAndAnalyze(img, pixelsize, mov_window_size)
             bbox = round(validROIs(i).Position);
             xStart = bbox(1);
             xEnd = xStart + bbox(3) - 1;
-            outputfile(1, xStart:xEnd) = 1;
-            fprintf('ROI %d: from %d to %d\n', i, xStart, xEnd);
+            outputfile(1, xStart*binfactor:xEnd*binfactor) = 1;
+            fprintf('ROI %d: from %d to %d\n', i, xStart*binfactor, xEnd*binfactor);
         catch ME
             warning('Failed to process ROI %d: %s', i, ME.message);
         end
