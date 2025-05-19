@@ -193,7 +193,12 @@ end
 save(fullfile(savepath, sprintf('fullres_%dum_%s.mat', mov_window_size, timestamp)), 'CRSres');
 
 
-T = struct2table(CRSres);
+if isscalar(CRSres)
+    T = struct2table(CRSres, 'AsArray', true);
+else
+    T = struct2table(CRSres);
+end
+
 T.CRSline = [];
 T.FITline = [];
 T.DETline = [];
