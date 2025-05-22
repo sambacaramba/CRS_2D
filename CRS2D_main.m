@@ -21,6 +21,7 @@ close all
  pixel_size = 0.221; %pixel size in µm 
  mov_window_size = 28; %moving window size in µm
  angle_range =[0, 90]; %show angles from 
+ fit_exclusion = 10 %how far from the surface fit to exclude "bad areas" (in µm) 
 
 %% choose samples to analyze (single sample or batch) 
 folders = uipickfiles('FilterSpec','D:\','Output','struct','Prompt','Choose samples for analysis')
@@ -81,8 +82,8 @@ for i =1:numel(folders)
         artefactmask = [];
     end
 
-
-    [CRS, fitline, Detectedline, Mask] = CRS2D_batch(savepath, fname, image, pixel_size, mov_window_size, angle_range, thresholds(1,k),artefactmask);
+    
+    [CRS, fitline, Detectedline, Mask] = CRS2D_batch(savepath, fname, image, pixel_size, mov_window_size, angle_range, thresholds(1,k),artefactmask,fit_exclusion);
 
     % Use artefactMask from ThresRes(k)
     if isfield(ThresRes(k), 'artefactMask') && ~isempty(ThresRes(k).artefactMask)
@@ -192,12 +193,12 @@ end
 
 save(fullfile(savepath, sprintf('fullres_%dum_%s.mat', mov_window_size, timestamp)), 'CRSres');
 
-
 if isscalar(CRSres)
     T = struct2table(CRSres, 'AsArray', true);
 else
     T = struct2table(CRSres);
 end
+
 
 T.CRSline = [];
 T.FITline = [];

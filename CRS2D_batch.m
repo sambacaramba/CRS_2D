@@ -1,5 +1,5 @@
 
-function [normal_diff, fitted_line, smoothed_line, largestObjectLabel] = CRS2D_batch(savepath, fname, image, pixelsize, mov_window_size,angle_range,chosenThreshold,artefactmask)
+function [normal_diff, fitted_line, smoothed_line, largestObjectLabel] = CRS2D_batch(savepath, fname, image, pixelsize, mov_window_size,angle_range,chosenThreshold,artefactmask,exclusion_threshold)
 
 
 
@@ -95,8 +95,8 @@ title('Smoothed Line on Binary Image');
 %% iterative fit 
 %% Iterative fit
 smoothed_line_iter = smoothed_line; % Assuming smoothed_line is defined elsewhere
-ws = floor(mov_window_size / pixelsize); % Assuming pixelsize is defined elsewhere
-cols = length(smoothed_line_iter); % Assuming this is the correct way to get the number of columns
+ws = floor(exclusion_threshold / pixelsize); % 10µm difference in fit is set as big deviation -->excluded
+cols = length(smoothed_line_iter); %  number of columns
 x = 1:cols; % x-coordinates for fitting
 % figure;
 m = 1; % Iteration counter
