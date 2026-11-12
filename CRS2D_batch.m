@@ -334,14 +334,49 @@ end
  title(titleStr);
 
 
+% Annotate the mean after applying the same exclusions as the main script.
+% This uses a copy, so returned CRS arrays and downstream results are unchanged.
+labelMask = [];
+if exist('artefactmask', 'var') && ~isempty(artefactmask)
+    labelMask = artefactmask;
+end
+addMeanCRSLabel(gca, normal_diff, labelMask, 'Simple');
+
 % Save the figure as an image
 angleRangeString = sprintf('_CRS_%d-%d', angle_range(1), angle_range(2));
 
 filename = fullfile(savepath, [fname angleRangeString '.png']); % Using fullfile for better path handling
 print(fig, filename, '-dpng', ['-r', '96']); % Specifying DPI
 
+end % Main analysis function
 
+function addMeanCRSLabel(ax, values, artefactmask, surfaceName)
+% Match the artefact exclusions used by CRS2D_main without changing outputs.
+values = values(:);
+if ~isempty(artefactmask)
+    artefactmask = logical(artefactmask(:));
+    len_diff = numel(values) - numel(artefactmask);
+    if len_diff > 0
+        artefactmask = [false(floor(len_diff/2),1); artefactmask; ...
+                        false(ceil(len_diff/2),1)];
+    elseif len_diff < 0
+        artefactmask = artefactmask(1:numel(values));
+    end
+    values(artefactmask) = NaN;
+end
 
+if isempty(values) || all(isnan(values))
+    label = sprintf('%s surface\nMean CRS: N/A (no valid values)', surfaceName);
+else
+    label = sprintf('%s surface\nMean CRS: %.2f%c', ...
+        surfaceName, mean(values, 'omitnan'), char(176));
+end
 
-
-
+% Normalized axes coordinates keep the box in the upper-right corner.
+% Change 0.98, 0.98 and the alignment properties to reposition it.
+text(ax, 0.98, 0.98, label, 'Units', 'normalized', ...
+    'HorizontalAlignment', 'right', 'VerticalAlignment', 'top', ...
+    'FontSize', 12, 'FontWeight', 'bold', 'Color', 'k', ...
+    'BackgroundColor', 'w', 'EdgeColor', [0.3 0.3 0.3], ...
+    'Margin', 6, 'Interpreter', 'none', 'HandleVisibility', 'off');
+end
